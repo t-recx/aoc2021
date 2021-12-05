@@ -1,66 +1,33 @@
 #!/usr/bin/env ruby
 
-board = {}
-
-lines = File.readlines(ARGV[0])
-  .map(&:strip)
+lines = File.readlines(ARGV[0]).map(&:strip)
   .map { |line| line.split(' -> ').map { |point| point.split(',').map(&:to_i) } }
+
+board = {}
 
 points_touching = 0
 
 lines.each do |a, b|
-  xa = a[0]
-  ya = a[1]
-  xb = b[0]
-  yb = b[1]
+  x, y = a
+  xb, yb = b
 
-  if xa == xb || ya == yb
-    if xa > xb
-      xs = xb
-      xe = xa
-    else
-      xs = xa
-      xe = xb
-    end
+  xi = x == xb ? 0 : (x > xb ? - 1 : 1)
+  yi = y == yb ? 0 : (y > yb ? - 1 : 1)
 
-    if ya > yb
-      ys = yb
-      ye = ya
-    else
-      ys = ya
-      ye = yb
-    end
+  break_next = false
 
-    (ys..ye).each do |y|
-      (xs..xe).each do |x|
-        board[y] = {} unless board[y]
-        board[y][x] = (board[y][x] || 0) + 1
+  loop do
+    board[y] = {} unless board[y]
+    board[y][x] = (board[y][x] || 0) + 1
 
-        points_touching += 1 if board[y][x] == 2
-      end
-    end
-  else
-    x = xa
-    y = ya
+    points_touching += 1 if board[y][x] == 2
 
-    xi = xa > xb ? - 1 : 1
-    yi = ya > yb ? - 1 : 1
+    x += xi
+    y += yi
 
-    break_next = false
+    break if break_next
 
-    loop do
-      board[y] = {} unless board[y]
-      board[y][x] = (board[y][x] || 0) + 1
-
-      points_touching += 1 if board[y][x] == 2
-
-      x += xi
-      y += yi
-
-      break if break_next
-
-      break_next = true if x == xb || y == yb
-    end
+    break_next = true if x == xb && y == yb
   end
 end
 
