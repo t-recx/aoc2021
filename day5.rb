@@ -14,8 +14,6 @@ def get_points_touching(lines, ignore_diagonals)
     xi = x == xb ? 0 : (x > xb ? - 1 : 1)
     yi = y == yb ? 0 : (y > yb ? - 1 : 1)
 
-    break_next = false
-
     loop do
       board[y] = {} unless board[y]
       board[y][x] = (board[y][x] || 0) + 1
@@ -25,16 +23,15 @@ def get_points_touching(lines, ignore_diagonals)
       x += xi
       y += yi
 
-      break if break_next
-
-      break_next = true if x == xb && y == yb
+      break if x == xb + xi && y == yb + yi
     end
   end
 
   points_touching
 end
 
-lines = File.readlines(ARGV[0]).map(&:strip)
+lines = File.readlines(ARGV[0])
+  .map(&:strip)
   .map { |line| line.split(' -> ').map { |point| point.split(',').map(&:to_i) } }
 
 # part1
