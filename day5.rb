@@ -31,7 +31,6 @@ def get_points_touching(lines, ignore_diagonals)
 end
 
 lines = File.readlines(ARGV[0])
-  .map(&:strip)
   .map { |line| line.split(' -> ').map { |point| point.split(',').map(&:to_i) } }
 
 # part1
