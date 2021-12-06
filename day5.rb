@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 
-def get_points_touching(lines, ignore_diagonals)
+lines = File.readlines(ARGV[0])
+  .map { |line| line.split(' -> ').map { |point| point.split(',').map(&:to_i) } }
+
+[true, false].each do |ignore_diagonals|
   board = {}
 
   points_touching = 0
@@ -27,14 +30,5 @@ def get_points_touching(lines, ignore_diagonals)
     end
   end
 
-  points_touching
+  p points_touching
 end
-
-lines = File.readlines(ARGV[0])
-  .map { |line| line.split(' -> ').map { |point| point.split(',').map(&:to_i) } }
-
-# part1
-p get_points_touching(lines, true)
-
-# part2
-p get_points_touching(lines, false)
