@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-input = File.read(ARGV[0]).split(',').map(&:to_i).each_with_object(Hash.new(0)) { |fish, hash| hash[fish] += 1 }
+input = File.read(ARGV[0]).split(',').each_with_object(Hash.new(0)) { |f, h| h[f.to_i] += 1 }
 
 [80, 256].each do |n|
   fishes = input.clone
