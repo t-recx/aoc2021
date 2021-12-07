@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-positions = File.read(ARGV[0]).split(',').each_with_object(Hash.new(0)) { |f, h| h[f.to_i] += 1 }
+positions = File.read(ARGV[0]).split(',').each_with_object(Hash.new(0)) { |x, h| h[x.to_i] += 1 }
 
 positions_range = (positions.keys.min..positions.keys.max)
 
