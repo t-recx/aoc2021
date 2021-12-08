@@ -21,11 +21,7 @@ def get_output_values(signal_patterns, output_values)
   six = signal_patterns.find { |x| x.size == 6 && eight.chars - x.chars == [d] }
   zero = signal_patterns.find { |x| x.size == 6 && x != six && x != nine }
 
-  definitions = {
-    zero => 0, one => 1, two => 2, three => 3,
-    four => 4, five => 5, six => 6, seven => 7,
-    eight => 8, nine => 9
-  }
+  definitions = [zero, one, two, three, four, five, six, seven, eight, nine].each_with_index.to_h
 
   output_values.map { |ov| definitions[ov] }.join.to_i
 end
