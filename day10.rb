@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-points = { ')' => 3, ']' => 57, '}' => 1197, '>' => 25_137 }
-points_completion = { '(' => 1, '[' => 2, '{' => 3, '<' => 4 }
-
 pairs = { '(' => ')', '[' => ']', '{' => '}', '<' => '>' }
+
+points_corruption = { ')' => 3, ']' => 57, '}' => 1197, '>' => 25_137 }
+points_completion = { '(' => 1, '[' => 2, '{' => 3, '<' => 4 }
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 
@@ -12,15 +12,15 @@ corrupted_score = 0
 completion_scores = []
 
 input.each do |line|
-  s = []
+  stack = []
 
   corrupted = false
 
   line.each do |c|
     if pairs.keys.include? c
-      s.push c
-    elsif pairs[s.pop] != c
-      corrupted_score += points[c]
+      stack.push c
+    elsif pairs[stack.pop] != c
+      corrupted_score += points_corruption[c]
       corrupted = true
       break
     end
@@ -29,9 +29,9 @@ input.each do |line|
   next if corrupted
 
   completion_scores.push(
-    s
+    stack
     .reverse
-    .map { |c| points_completion[c] }
+    .map(&points_completion)
     .reduce { |acc, v| acc * 5 + v }
   )
 end
