@@ -33,9 +33,11 @@ def get_path_from(position)
   path.reverse
 end
 
-def get_path(board, positions, origin, destination)
+def get_path(board, origin, destination)
   current = nil
   open = [origin]
+  open_board = {}
+  open_board[origin.y] = { origin.x => origin}
 
   origin.g = 0
 
@@ -47,6 +49,8 @@ def get_path(board, positions, origin, destination)
     break if current.x == destination.x && current.y == destination.y
 
     open.delete(current)
+
+    open_board[current.y].delete(current.x)
 
     neighbors = []
 
@@ -64,17 +68,22 @@ def get_path(board, positions, origin, destination)
         neighbor.h = (neighbor.x - destination.x).abs + (neighbor.y - destination.y).abs
         neighbor.parent = current
 
-        open.push(neighbor) unless open.include? neighbor
+        unless open_board[neighbor.y] && open_board[neighbor.y][neighbor.x]
+          open.push(neighbor)
+
+          open_board[neighbor.y] = {} unless open_board[neighbor.y]
+          open_board[neighbor.y][neighbor.x] = neighbor
+        end
       end
     end
   end
 
-  return get_path_from(current)
+  get_path_from(current)
 end
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 
-def part_a input
+def get_input_a input
   locations = []
   board = {}
   
@@ -83,15 +92,13 @@ def part_a input
   
     line.map(&:to_i).each_with_index do |c, x|
       board[y][x] = Position.new(x, y, c)
-  
-      locations.push board[y][x]
     end
   end
 
-  p get_path(board, locations, locations.first, locations.last).map { |x| x.cost }.sum - locations.first.cost
+  board
 end
 
-def part_b input
+def get_input_b input
   locations = []
   board = {}
   cost_range = (1..9).to_a
@@ -106,15 +113,14 @@ def part_b input
           px = x + ii * line.length
           cost = cost_range[(c + i + ii) % 9 - 1]
           board[py][px] = Position.new(px, py, cost)
-
-          locations.push board[py][px]
         end
       end
     end
   end
 
-  p get_path(board, locations, locations.first, locations.last).map { |x| x.cost }.sum - locations.first.cost
+  board
 end
 
-part_a(input)
-part_b(input)
+[get_input_a(input), get_input_b(input)]
+  .map { |board| get_path(board, board[0][0], board[board.keys.max][board[0].keys.max]) }
+  .map { |x| p x[1..].map { |y| y.cost }.sum }
