@@ -17,10 +17,6 @@ class Position
   def f
     @g + @h
   end
-
-  def to_s
-    "#{x}, #{y}, #{cost}, #{g}, #{h}, #{f}"
-  end
 end
 
 def get_path_from(position)
@@ -37,7 +33,7 @@ def get_path_from(position)
   path.reverse
 end
 
-def get_path(positions, origin, destination)
+def get_path(board, positions, origin, destination)
   current = nil
   open = [origin]
 
@@ -52,7 +48,13 @@ def get_path(positions, origin, destination)
 
     open.delete(current)
 
-    neighbors = positions.select { |p| (p.x - current.x).abs + (p.y - current.y).abs == 1 }
+    neighbors = []
+
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |ix, iy|
+      if (board[current.y + iy] && board[current.y + iy][current.x + ix])
+        neighbors.push board[current.y + iy][current.x + ix]
+      end
+    end
 
     neighbors.each do |neighbor|
       g = current.g + neighbor.cost
@@ -72,18 +74,47 @@ end
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 
-locations = []
-board = {}
-
-input.each_with_index do |line, y|
-  board[y] = {}
-
-  line.map(&:to_i).each_with_index do |c, x|
-    board[y][x] = c
-
-    locations.push Position.new(x, y, c)
+def part_a input
+  locations = []
+  board = {}
+  
+  input.each_with_index do |line, y|
+    board[y] = {}
+  
+    line.map(&:to_i).each_with_index do |c, x|
+      board[y][x] = Position.new(x, y, c)
+  
+      locations.push board[y][x]
+    end
   end
+
+  p get_path(board, locations, locations.first, locations.last).map { |x| x.cost }.sum - locations.first.cost
 end
 
-#get_path(locations, locations.first, locations.last).map { |x| puts x }
-p get_path(locations, locations.first, locations.last).map { |x| x.cost }.sum - locations.first.cost
+def part_b input
+  locations = []
+  board = {}
+  cost_range = (1..9).to_a
+  
+  input.each_with_index do |line, y|
+    (0..4).each do |i|
+      py = y + i * input.length
+      board[py] = {}
+  
+      line.map(&:to_i).each_with_index do |c, x|
+        (0..4).each do |ii|
+          px = x + ii * line.length
+          cost = cost_range[(c + i + ii) % 9 - 1]
+          board[py][px] = Position.new(px, py, cost)
+
+          locations.push board[py][px]
+        end
+      end
+    end
+  end
+
+  p get_path(board, locations, locations.first, locations.last).map { |x| x.cost }.sum - locations.first.cost
+end
+
+part_a(input)
+part_b(input)
